@@ -8,11 +8,12 @@
 
     <title>{{ course.name }}</title>
 
-    <!-- Bootstrap styling -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
+
     <!-- Navigation bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
@@ -21,7 +22,10 @@
             </a>
 
             {% if user.is_authenticated %}
-            <span class="navbar-text mr-3">{{ user.username }}</span>
+            <span class="navbar-text mr-3">
+                {{ user.username }}
+            </span>
+
             <a class="btn btn-outline-secondary" href="{% url 'onlinecourse:logout' %}">
                 Logout
             </a>
@@ -35,14 +39,14 @@
 
     <main class="container mt-4 mb-5">
 
-        <!-- Course details: required for Task 4 -->
-        <section class="mb-4">
-            <h2>{{ course.name }}</h2>
-            <p>{{ course.description }}</p>
+        <!-- Course name and description -->
+        <section class="container mt-4 mb-4">
+            <h2 class="text-center mb-4">{{ course.name }}</h2>
+            <p class="lead">{{ course.description }}</p>
         </section>
 
-        <!-- Display all lessons related to this course -->
-        <section>
+        <!-- Display course lessons -->
+        <section class="mb-4">
             <h3 class="mb-3">Course Lessons</h3>
 
             {% for lesson in course.lesson_set.all %}
@@ -65,8 +69,8 @@
 
         <hr class="my-4">
 
-        <!-- Course exam functionality -->
-        <section>
+        <!-- Course exam -->
+        <section class="mb-4">
             <h3 class="mb-3">Course Exam</h3>
 
             {% if user.is_authenticated %}
@@ -81,6 +85,7 @@
                         <strong>
                             Question {{ forloop.counter }}:
                         </strong>
+
                         {{ question.question_text }}
 
                         ({{ question.grade }}
@@ -125,6 +130,7 @@
         </section>
 
     </main>
+
 </body>
 
 </html>

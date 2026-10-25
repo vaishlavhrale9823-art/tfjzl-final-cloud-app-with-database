@@ -154,4 +154,4 @@ class Submission(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Submission {self.id} for Enrollment {self.enrollment.id}"
+        return f"Submission {self.id} for enrollment {self.enrollment.id}"
