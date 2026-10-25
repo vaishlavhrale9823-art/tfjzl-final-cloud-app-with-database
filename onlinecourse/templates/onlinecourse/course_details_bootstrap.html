@@ -5,85 +5,126 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <title>{{ course.name }}</title>
+
+    <!-- Bootstrap styling -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 
 <body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">
+                Online Courses
+            </a>
 
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-        {% if user.is_authenticated %}
-        <span>{{ user.username }}</span>
-        <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-        {% else %}
-        <a class="btn btn-link" href="{% url 'onlinecourse:login' %}">Login</a>
-        {% endif %}
+            {% if user.is_authenticated %}
+            <span class="navbar-text mr-3">{{ user.username }}</span>
+            <a class="btn btn-outline-secondary" href="{% url 'onlinecourse:logout' %}">
+                Logout
+            </a>
+            {% else %}
+            <a class="btn btn-outline-primary" href="{% url 'onlinecourse:login' %}">
+                Login
+            </a>
+            {% endif %}
+        </div>
     </nav>
 
-    <main class="container mt-4">
-        <h2>{{ course.name }}</h2>
-        <p>{{ course.description }}</p>
+    <main class="container mt-4 mb-5">
 
-        <h3 class="mt-4">Course Lessons</h3>
-        {% for lesson in course.lesson_set.all %}
-        <div class="card mt-3">
-            <div class="card-header">{{ lesson.title }}</div>
-            <div class="card-body">{{ lesson.content }}</div>
-        </div>
-        {% empty %}
-        <div class="alert alert-info">No lessons are available yet.</div>
-        {% endfor %}
+        <!-- Course details: required for Task 4 -->
+        <section class="mb-4">
+            <h2>{{ course.name }}</h2>
+            <p>{{ course.description }}</p>
+        </section>
 
-        <hr>
-        <h3 class="mt-4">Course Exam</h3>
+        <!-- Display all lessons related to this course -->
+        <section>
+            <h3 class="mb-3">Course Lessons</h3>
 
-        {% if user.is_authenticated %}
-        {% with questions=course.question_set.all %}
-        {% if questions %}
-        <form method="post" action="{% url 'onlinecourse:submit' course.id %}">
-            {% csrf_token %}
-
-            {% for question in questions %}
-            <div class="card mt-3">
+            {% for lesson in course.lesson_set.all %}
+            <div class="card mb-3">
                 <div class="card-header">
-                    <strong>Question {{ forloop.counter }}:</strong>
-                    {{ question.question_text }}
-                    ({{ question.grade }} mark{{ question.grade|pluralize }})
+                    <strong>Lesson {{ forloop.counter }}:</strong>
+                    {{ lesson.title }}
                 </div>
+
                 <div class="card-body">
-                    {% for choice in question.choice_set.all %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="choice_{{ question.id }}"
-                            id="choice_{{ choice.id }}" value="{{ choice.id }}">
-                        <label class="form-check-label" for="choice_{{ choice.id }}">
-                            {{ choice.choice_text }}
-                        </label>
-                    </div>
-                    {% empty %}
-                    <p>No choices have been added to this question.</p>
-                    {% endfor %}
+                    <p class="card-text">{{ lesson.content }}</p>
                 </div>
             </div>
+            {% empty %}
+            <div class="alert alert-info">
+                No lessons are available for this course yet.
+            </div>
             {% endfor %}
+        </section>
 
-            <button type="submit" class="btn btn-primary mt-4 mb-4">
-                Submit Exam
-            </button>
-        </form>
-        {% else %}
-        <div class="alert alert-warning">
-            No exam questions have been added to this course yet.
-        </div>
-        {% endif %}
-        {% endwith %}
-        {% else %}
-        <div class="alert alert-info">
-            Please log in to take the exam.
-        </div>
-        {% endif %}
+        <hr class="my-4">
+
+        <!-- Course exam functionality -->
+        <section>
+            <h3 class="mb-3">Course Exam</h3>
+
+            {% if user.is_authenticated %}
+            {% with questions=course.question_set.all %}
+            {% if questions %}
+            <form method="post" action="{% url 'onlinecourse:submit' course.id %}">
+                {% csrf_token %}
+
+                {% for question in questions %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>
+                            Question {{ forloop.counter }}:
+                        </strong>
+                        {{ question.question_text }}
+
+                        ({{ question.grade }}
+                        mark{{ question.grade|pluralize }})
+                    </div>
+
+                    <div class="card-body">
+                        {% for choice in question.choice_set.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="choice_{{ question.id }}"
+                                id="choice_{{ choice.id }}" value="{{ choice.id }}">
+
+                            <label class="form-check-label" for="choice_{{ choice.id }}">
+                                {{ choice.choice_text }}
+                            </label>
+                        </div>
+                        {% empty %}
+                        <p>
+                            No choices have been added
+                            to this question.
+                        </p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary mt-2">
+                    Submit Exam
+                </button>
+            </form>
+            {% else %}
+            <div class="alert alert-warning">
+                No exam questions have been added to this course yet.
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% else %}
+            <div class="alert alert-info">
+                Please log in to take the exam.
+            </div>
+            {% endif %}
+        </section>
+
     </main>
-
 </body>
 
 </html>
